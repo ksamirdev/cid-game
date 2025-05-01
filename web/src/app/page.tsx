@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { FC, FormEvent, useEffect, useRef, useState } from "react";
-import { LucideGamepad2 } from "lucide-react";
+import { LucideDot, LucideGamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 type Role = "CID" | "Killer" | "Player";
 
@@ -98,6 +98,22 @@ export default function Home() {
         CID Heroes
       </h1>
 
+      <div className="inline-flex items-center gap-1">
+        Status:{" "}
+        <b>
+          {wsRef.current?.readyState === wsRef.current?.OPEN
+            ? "Connected"
+            : "Disconnected"}
+        </b>
+        <LucideDot
+          className={cn(
+            wsRef.current?.readyState === wsRef.current?.OPEN
+              ? "stroke-green-500"
+              : "stroke-red-500"
+          )}
+        />
+      </div>
+
       {!connected ? (
         <form
           className="flex flex-col bg-secondary mx-5 border p-5 rounded-xl gap-3 items-start"
@@ -112,7 +128,7 @@ export default function Home() {
           />
 
           <Label>Name</Label>
-          <Input placeholder="pls enter your name :(" name="name" />
+          <Input placeholder="gimme ur name :3" name="name" />
           <Button type="submit" className="w-full" size="lg">
             Join the game <LucideGamepad2 />
           </Button>
