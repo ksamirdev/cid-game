@@ -94,7 +94,7 @@ export default function Home() {
 
   return (
     <div className="space-y-5 text-center ">
-      <h1 className="scroll-m-20 text-4xl my-5 font-extrabold tracking-tight lg:text-5xl creepster-regular">
+      <h1 className="scroll-m-20 text-4xl my-5 font-extrabold tracking-tight lg:text-5xl font-(family-name:--font-creepster)">
         CID Heroes
       </h1>
 
@@ -148,7 +148,7 @@ export default function Home() {
             {role ? (
               <>
                 <div className="text-base font-sans">YOU GOT</div>
-                <div className="text-3xl tracking-wide creepster-regular font-bold">
+                <div className="text-3xl tracking-wide font-(family-name:--font-creepster) font-bold">
                   {role}
                 </div>
                 <div className="min-h-[20px]" />
