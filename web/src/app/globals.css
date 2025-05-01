@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -51,11 +51,12 @@
   }
 } */
 
-.tagesschrift-regular {
-  font-family: "Tagesschrift", system-ui;
+.creepster-regular {
+  font-family: "Creepster", system-ui;
   font-weight: 400;
   font-style: normal;
 }
+
 
 :root {
   --radius: 0.75rem;

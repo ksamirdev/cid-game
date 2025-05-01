@@ -94,7 +94,7 @@ export default function Home() {
 
   return (
     <div className="space-y-5 text-center ">
-      <h1 className="scroll-m-20 text-4xl my-5 font-extrabold tracking-tight lg:text-5xl tagesschrift-regular">
+      <h1 className="scroll-m-20 text-4xl my-5 font-extrabold tracking-tight lg:text-5xl creepster-regular">
         CID Heroes
       </h1>
 
@@ -147,16 +147,16 @@ export default function Home() {
           <div className="flex flex-col col-span-2 bg-neutral-900 rounded-lg p-3">
             {role ? (
               <>
-                <div className="text-base tagesschrift-regular">YOU GOT</div>
-                <div className="text-3xl tracking-wide font-bold">{role}</div>
+                <div className="text-base font-sans">YOU GOT</div>
+                <div className="text-3xl tracking-wide creepster-regular font-bold">
+                  {role}
+                </div>
                 <div className="min-h-[20px]" />
 
                 <RoleImage role={role} />
               </>
             ) : (
-              <div className="text-base tagesschrift-regular">
-                pls let your host start
-              </div>
+              <div className="text-base font-sans">pls let your host start</div>
             )}
           </div>
         </div>
