@@ -75,10 +75,6 @@ export class MyDurableObject extends DurableObject<Env> {
 						const killer = shuffled[1];
 						const others = shuffled.slice(2);
 
-						console.log(cid);
-						console.log(killer);
-						console.log(others);
-
 						// Assign roles and notify each player
 						cid.socket.send(JSON.stringify({ type: 'role', role: 'CID' }));
 						killer.socket.send(JSON.stringify({ type: 'role', role: 'Killer' }));
@@ -133,10 +129,5 @@ export class MyDurableObject extends DurableObject<Env> {
 		for (const player of this.players.values()) {
 			player.socket.send(json);
 		}
-	}
-
-	// Example RPC method (can be used or removed)
-	async sayHello(name: string): Promise<string> {
-		return `Hello, ${name}!`;
 	}
 }
