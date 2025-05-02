@@ -23,7 +23,7 @@ export class MyDurableObject extends DurableObject<Env> {
 
 			serverSocket.accept();
 
-			serverSocket.addEventListener('message', (event) => {
+			serverSocket.addEventListener('message', async (event) => {
 				try {
 					const msg = JSON.parse(event.data.toString());
 
@@ -43,6 +43,7 @@ export class MyDurableObject extends DurableObject<Env> {
 							id: clientId,
 							name,
 							isAdmin: clientId === this.adminId,
+							count: this.players.size,
 						});
 					}
 
@@ -69,11 +70,18 @@ export class MyDurableObject extends DurableObject<Env> {
 						}
 
 						// Shuffle players
-						const shuffled = [...playerArray].sort(() => Math.random() - 0.5);
+						const shuffled = getShuffledArr<Player>(playerArray);
 
 						const cid = shuffled[0];
 						const killer = shuffled[1];
 						const others = shuffled.slice(2);
+						0;
+
+						// small delay while delivering the role
+						this.broadcast({
+							type: 'roles-assigning',
+						});
+						await new Promise((res) => setTimeout(res, 2 * 1000));
 
 						// Assign roles and notify each player
 						cid.socket.send(JSON.stringify({ type: 'role', role: 'CID' }));
@@ -101,6 +109,7 @@ export class MyDurableObject extends DurableObject<Env> {
 						type: 'player-left',
 						id: clientId,
 						name: player.name,
+						count: this.players.size,
 					});
 
 					if (clientId === this.adminId) {
@@ -130,4 +139,13 @@ export class MyDurableObject extends DurableObject<Env> {
 			player.socket.send(json);
 		}
 	}
+}
+
+function getShuffledArr<T extends any>(arr: T[]) {
+	const newArr = arr.slice();
+	for (let i = newArr.length - 1; i > 0; i--) {
+		const rand = Math.floor(Math.random() * (i + 1));
+		[newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
+	}
+	return newArr;
 }
