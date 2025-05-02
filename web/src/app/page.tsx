@@ -155,41 +155,42 @@ export default function Home() {
           )}
         >
           <div className="flex flex-col col-span-2 bg-neutral-900 rounded-lg p-3">
-            {role ? (
-              <>
-                <div className="text-base font-sans">YOU GOT</div>
-                <div className="text-3xl tracking-widest font-(family-name:--font-creepster) font-bold">
-                  {role}
-                </div>
-                <div className="min-h-[20px]" />
-                <RoleImage role={role} />
-              </>
-            ) : null}
+            <div className="text-center px-4">
+              {isAssigning ? (
+                <>
+                  <div className="text-base font-sans mx-auto">
+                    <LucideLoader className="animate-spin mx-auto" />
+                  </div>
+                  <div className="text-3xl tracking-wide font-(family-name:--font-creepster) font-bold">
+                    WAIT BRO
+                  </div>
+                  <div className="min-h-[20px]" />
+                  <div>
+                    <Image
+                      src="/wait.jpg"
+                      className="mx-auto rounded-lg"
+                      height={200}
+                      width={200}
+                      alt="Waiting"
+                    />
+                  </div>
+                </>
+              ) : (
+                role && (
+                  <>
+                    <div className="text-base font-sans">YOU GOT</div>
+                    <div className="text-3xl tracking-widest font-(family-name:--font-creepster) font-bold">
+                      {role}
+                    </div>
+                    <div className="min-h-[20px]" />
+                    <RoleImage role={role} />
+                  </>
+                )
+              )}
+            </div>
 
             {!role && !isAssigning ? (
               <div className="text-base font-sans">pls let your host start</div>
-            ) : null}
-
-            {isAssigning ? (
-              <>
-                <div className="text-base font-sans mx-auto">
-                  <LucideLoader className="animate-spin" />
-                </div>
-                <div className="text-3xl tracking-wide font-(family-name:--font-creepster) font-bold">
-                  WAIT BRO
-                </div>
-                <div className="min-h-[20px]" />
-
-                <div>
-                  <Image
-                    src={`/wait.jpg`}
-                    className="mx-auto rounded-lg"
-                    height={200}
-                    width={200}
-                    alt="CID"
-                  />
-                </div>
-              </>
             ) : null}
           </div>
 
