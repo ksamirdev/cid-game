@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { FC, FormEvent, useEffect, useRef, useState } from "react";
-import { LucideDot, LucideGamepad2, LucideLoader } from "lucide-react";
+import { LucideGamepad2, LucideLoader } from "lucide-react";
 import { cn } from "@/lib/utils";
 type Role = "CID" | "Killer" | "Player";
 
