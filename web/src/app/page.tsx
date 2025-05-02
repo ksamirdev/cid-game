@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import { LucideGamepad2, LucideLoader } from "lucide-react";
 import { cn } from "@/lib/utils";
 type Role = "CID" | "Killer" | "Player";
@@ -166,7 +166,7 @@ export default function Home() {
                     WAIT BRO
                   </div>
                   <div className="min-h-[20px]" />
-                  {/* <div>
+                  <div>
                     <Image
                       src="/wait.jpg"
                       className="mx-auto rounded-lg"
@@ -175,7 +175,7 @@ export default function Home() {
                       alt="Waiting"
                       priority
                     />
-                  </div> */}
+                  </div>
                 </>
               ) : (
                 role && (
@@ -185,28 +185,10 @@ export default function Home() {
                       {role}
                     </div>
                     <div className="min-h-[20px]" />
-                    {/* <RoleImage role={role} /> */}
+                    <RoleImage role={role} />
                   </>
                 )
               )}
-
-              <div>
-                <Image
-                  src={cn(
-                    "/",
-                    isAssigning ? "wait.jpg" : "",
-                    role ? `${role.toLowerCase()}.jpg` : ""
-                  )}
-                  className={cn(
-                    "mx-auto rounded-lg",
-                    !(isAssigning || role) && "hidden"
-                  )}
-                  height={200}
-                  width={200}
-                  alt="Waiting"
-                  priority
-                />
-              </div>
             </div>
 
             {!role && !isAssigning ? (
@@ -227,15 +209,15 @@ export default function Home() {
   );
 }
 
-// const RoleImage: FC<{ role: Role }> = ({ role }) => (
-//   <div>
-//     <Image
-//       src={`/${role.toLowerCase()}.jpg`}
-//       className="mx-auto rounded-lg"
-//       height={200}
-//       width={200}
-//       alt="CID"
-//       priority
-//     />
-//   </div>
-// );
+const RoleImage: FC<{ role: Role }> = ({ role }) => (
+  <div>
+    <Image
+      src={`/${role.toLowerCase()}.jpg`}
+      className="mx-auto rounded-lg"
+      height={200}
+      width={200}
+      alt="CID"
+      priority
+    />
+  </div>
+);
