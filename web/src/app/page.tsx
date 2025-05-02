@@ -125,6 +125,7 @@ export default function Home() {
             className="mx-auto"
             height={200}
             width={250}
+            priority
             alt=""
           />
 
@@ -155,7 +156,7 @@ export default function Home() {
           )}
         >
           <div className="flex flex-col col-span-2 bg-neutral-900 rounded-lg p-3">
-            <div className="text-center px-4">
+            <div className="text-center px-4 min-h-[400px] flex flex-col justify-center items-center">
               {isAssigning ? (
                 <>
                   <div className="text-base font-sans mx-auto">
@@ -172,6 +173,7 @@ export default function Home() {
                       height={200}
                       width={200}
                       alt="Waiting"
+                      priority
                     />
                   </div>
                 </>
@@ -215,6 +217,7 @@ const RoleImage: FC<{ role: Role }> = ({ role }) => (
       height={200}
       width={200}
       alt="CID"
+      priority
     />
   </div>
 );
