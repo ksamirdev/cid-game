@@ -156,7 +156,7 @@ export default function Home() {
           )}
         >
           <div className="flex flex-col col-span-2 bg-neutral-900 rounded-lg p-3">
-            <div className="text-center px-4 min-h-[400px] flex flex-col justify-center items-center">
+            <div className="text-center px-4">
               {isAssigning ? (
                 <>
                   <div className="text-base font-sans mx-auto">
