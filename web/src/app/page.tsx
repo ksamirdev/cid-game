@@ -33,7 +33,6 @@ export default function Home() {
 
     ws.onopen = () => {
       setConnectionStatus("CONNECTED");
-      console.log("WebSocket connected");
     };
 
     ws.onmessage = (msg) => {
@@ -79,7 +78,6 @@ export default function Home() {
     ws.onclose = () => {
       console.log("WebSocket disconnected. Attempting to reconnect...");
       setConnectionStatus("DISCONNECTED");
-      setTimeout(initWebSocket, 5000);
     };
 
     ws.onerror = (err) => {
@@ -191,7 +189,7 @@ export default function Home() {
         </Button>
       )}
 
-      {connectionStatus === "CONNECTED" ? (
+      {connectionStatus === "CONNECTED" && isJoined ? (
         <div
           className={cn(
             "grid border md:divide-x p-4 mx-5 grid-cols-1  gap-5 rounded-lg",
