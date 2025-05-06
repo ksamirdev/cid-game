@@ -2,6 +2,9 @@
 
 A multiplayer browser game built with Next.js and Cloudflare Workers using WebSockets and Durable Objects.
 
+[!Preview](/assets/preview.jpeg)
+
+
 ## Folders
 
 - **`web/`** – Frontend (Next.js app)
