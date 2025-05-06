@@ -1,34 +1,30 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { FC, FormEvent, useEffect, useRef, useState } from "react";
-import { LucideGamepad2, LucideLoader } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { LucideLoader } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const wsURL = process.env.NEXT_PUBLIC_WS_URL;
+if (!wsURL) throw new Error("Please specify NEXT_PUBLIC_WS_URL");
 
 type Role = "CID" | "Killer" | "Player";
 type ConnectionStatus = "CONNECTED" | "DISCONNECTED" | "RECONNECTING";
 
 export default function Home() {
   const wsRef = useRef<WebSocket | null>(null);
-  const [messages, setMessages] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("DISCONNECTED");
-
-  const [isJoined, setIsJoined] = useState(false);
 
   const [role, setRole] = useState<Role | null>(null);
   const [isAssigning, setIsAssigning] = useState(false);
   const [playersCount, setPlayersCount] = useState(0);
 
   const initWebSocket = () => {
-    const ws = new WebSocket(
-      "wss://cid-ws.samirdiff.workers.dev/connect?room=test-room",
-    );
+    const ws = new WebSocket(wsURL!);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -40,7 +36,6 @@ export default function Home() {
 
       switch (data.type) {
         case "player-joined":
-          setMessages((prev) => [...prev, `${data.name} joined the game`]);
           if (data.isAdmin) {
             setIsAdmin(true);
           }
@@ -49,7 +44,6 @@ export default function Home() {
 
         case "you-are-now-admin":
           setIsAdmin(true);
-          setMessages((prev) => [...prev, "You are now the admin."]);
           break;
 
         case "player-left":
@@ -118,24 +112,6 @@ export default function Home() {
     wsRef.current?.send(JSON.stringify({ type: "start" }));
   };
 
-  const handleJoinForm = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const fd = new FormData(e.currentTarget);
-    const name = fd.get("name");
-
-    if (typeof name !== "string" || name.trim().length === 0) {
-      return alert("pls gimme nameeeee");
-    }
-    if (!wsRef.current) {
-      return alert("there is no ws instance");
-    }
-
-    wsRef.current.send(JSON.stringify({ type: "join", name }));
-    setIsJoined(true);
-    setConnectionStatus("CONNECTED");
-  };
-
   return (
     <div className="space-y-5 text-center ">
       <h1 className="scroll-m-20 text-4xl my-5 font-extrabold tracking-tight lg:text-5xl font-(family-name:--font-creepster)">
@@ -160,29 +136,7 @@ export default function Home() {
         </b>
       </div>
 
-      {!isJoined ? (
-        <form
-          className="flex flex-col bg-secondary mx-5 border p-5 rounded-xl gap-3 items-start"
-          onSubmit={handleJoinForm}
-        >
-          <Image
-            src="/poster.jpg"
-            className="mx-auto"
-            height={200}
-            width={250}
-            priority
-            alt=""
-          />
-
-          <Label>Name</Label>
-          <Input placeholder="gimme ur name :3" name="name" />
-          <Button type="submit" className="w-full" size="lg">
-            Join the game <LucideGamepad2 />
-          </Button>
-        </form>
-      ) : null}
-
-      {isAdmin && isJoined && connectionStatus === "CONNECTED" && (
+      {isAdmin && connectionStatus === "CONNECTED" && (
         <Button
           onClick={handleStart}
           size="lg"
@@ -193,7 +147,7 @@ export default function Home() {
         </Button>
       )}
 
-      {connectionStatus === "CONNECTED" && isJoined ? (
+      {connectionStatus === "CONNECTED" ? (
         <div
           className={cn(
             "grid border md:divide-x p-4 mx-5 grid-cols-1  gap-5 rounded-lg",
@@ -237,17 +191,13 @@ export default function Home() {
             </div>
 
             {!role && !isAssigning ? (
-              <div className="text-base font-sans">pls let your host start</div>
+              <div className="text-base font-sans">
+                {isAdmin
+                  ? "pls start, you're the admin"
+                  : "pls let your host start"}
+              </div>
             ) : null}
           </div>
-
-          {isAdmin ? (
-            <ul className="p-5 list-disc text-start text-sm">
-              {messages.map((msg, idx) => (
-                <li key={idx}>{msg}</li>
-              ))}
-            </ul>
-          ) : null}
         </div>
       ) : null}
     </div>

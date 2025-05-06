@@ -2,7 +2,6 @@ import { DurableObject } from 'cloudflare:workers';
 
 interface Player {
 	id: string;
-	name: string;
 	socket: WebSocket;
 }
 
@@ -23,29 +22,25 @@ export class MyDurableObject extends DurableObject<Env> {
 
 			serverSocket.accept();
 
+			serverSocket.addEventListener('open', () => {
+				if (!this.adminId) this.adminId = clientId;
+
+				this.players.set(clientId, {
+					id: clientId,
+					socket: serverSocket,
+				});
+
+				this.broadcast({
+					type: 'player-joined',
+					id: clientId,
+					isAdmin: clientId === this.adminId,
+					count: this.players.size,
+				});
+			});
+
 			serverSocket.addEventListener('message', async (event) => {
 				try {
 					const msg = JSON.parse(event.data.toString());
-
-					if (msg.type === 'join') {
-						const name = msg.name || 'Player';
-
-						if (!this.adminId) this.adminId = clientId;
-
-						this.players.set(clientId, {
-							id: clientId,
-							name,
-							socket: serverSocket,
-						});
-
-						this.broadcast({
-							type: 'player-joined',
-							id: clientId,
-							name,
-							isAdmin: clientId === this.adminId,
-							count: this.players.size,
-						});
-					}
 
 					if (msg.type === 'start') {
 						if (clientId !== this.adminId) {
@@ -53,7 +48,7 @@ export class MyDurableObject extends DurableObject<Env> {
 								JSON.stringify({
 									type: 'error',
 									message: 'Only admin can start the game',
-								})
+								}),
 							);
 							return;
 						}
@@ -64,7 +59,7 @@ export class MyDurableObject extends DurableObject<Env> {
 								JSON.stringify({
 									type: 'error',
 									message: 'Need at least 3 players to start the game',
-								})
+								}),
 							);
 							return;
 						}
@@ -108,7 +103,6 @@ export class MyDurableObject extends DurableObject<Env> {
 					this.broadcast({
 						type: 'player-left',
 						id: clientId,
-						name: player.name,
 						count: this.players.size,
 					});
 
