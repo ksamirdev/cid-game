@@ -70,17 +70,15 @@ export default function Home() {
     };
 
     ws.onclose = () => {
-      console.log("WebSocket disconnected. Attempting to reconnect...");
       setConnectionStatus("DISCONNECTED");
-
-      setTimeout(initWebSocket, 500);
+      setTimeout(initWebSocket, 2000);
     };
 
     ws.onerror = (err) => {
       console.error("WebSocket error:", err);
       setConnectionStatus("DISCONNECTED");
 
-      setTimeout(initWebSocket, 500);
+      setTimeout(initWebSocket, 2000);
     };
   };
 

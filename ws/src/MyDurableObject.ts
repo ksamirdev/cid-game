@@ -22,20 +22,18 @@ export class MyDurableObject extends DurableObject<Env> {
 
 			serverSocket.accept();
 
-			serverSocket.addEventListener('open', () => {
-				if (!this.adminId) this.adminId = clientId;
+			if (!this.adminId) this.adminId = clientId;
 
-				this.players.set(clientId, {
-					id: clientId,
-					socket: serverSocket,
-				});
+			this.players.set(clientId, {
+				id: clientId,
+				socket: serverSocket,
+			});
 
-				this.broadcast({
-					type: 'player-joined',
-					id: clientId,
-					isAdmin: clientId === this.adminId,
-					count: this.players.size,
-				});
+			this.broadcast({
+				type: 'player-joined',
+				id: clientId,
+				isAdmin: clientId === this.adminId,
+				count: this.players.size,
 			});
 
 			serverSocket.addEventListener('message', async (event) => {
@@ -67,15 +65,14 @@ export class MyDurableObject extends DurableObject<Env> {
 						// Shuffle players
 						const shuffled = getShuffledArr<Player>(playerArray);
 
-						const cid = shuffled[0];
-						const killer = shuffled[1];
-						const others = shuffled.slice(2);
-						0;
+						const [cid, killer, others] = [shuffled[0], shuffled[1], shuffled.slice(2)];
 
 						// small delay while delivering the role
 						this.broadcast({
 							type: 'roles-assigning',
 						});
+
+						// for loading screen
 						await new Promise((res) => setTimeout(res, 2 * 1000));
 
 						// Assign roles and notify each player
