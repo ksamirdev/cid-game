@@ -7,22 +7,34 @@ import Image from "next/image";
 import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import { LucideGamepad2, LucideLoader } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 type Role = "CID" | "Killer" | "Player";
+type ConnectionStatus = "CONNECTED" | "DISCONNECTED" | "RECONNECTING";
 
 export default function Home() {
   const wsRef = useRef<WebSocket | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [connected, setConnected] = useState(false);
+
+  const [connectionStatus, setConnectionStatus] =
+    useState<ConnectionStatus>("DISCONNECTED");
+
+  const [isJoined, setIsJoined] = useState(false);
+
   const [role, setRole] = useState<Role | null>(null);
   const [isAssigning, setIsAssigning] = useState(false);
   const [playersCount, setPlayersCount] = useState(0);
 
-  useEffect(() => {
+  const initWebSocket = () => {
     const ws = new WebSocket(
-      "wss://cid-ws.samirdiff.workers.dev/connect?room=test-room"
+      "wss://cid-ws.samirdiff.workers.dev/connect?room=test-room",
     );
     wsRef.current = ws;
+
+    ws.onopen = () => {
+      setConnectionStatus("CONNECTED");
+      console.log("WebSocket connected");
+    };
 
     ws.onmessage = (msg) => {
       const data = JSON.parse(msg.data);
@@ -41,35 +53,62 @@ export default function Home() {
           setMessages((prev) => [...prev, "You are now the admin."]);
           break;
 
-        case "player-left": {
+        case "player-left":
           setPlayersCount(data.count);
           break;
-        }
 
-        case "roles-assigning": {
+        case "roles-assigning":
           setRole(null);
           setIsAssigning(true);
           break;
-        }
 
-        case "role": {
+        case "role":
           setIsAssigning(false);
           setRole(data.role);
           break;
-        }
 
-        case "error": {
+        case "error":
           alert(data.message);
           break;
-        }
 
         default:
           break;
       }
     };
 
+    ws.onclose = () => {
+      console.log("WebSocket disconnected. Attempting to reconnect...");
+      setConnectionStatus("DISCONNECTED");
+      setTimeout(initWebSocket, 5000);
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket error:", err);
+      setConnectionStatus("DISCONNECTED");
+    };
+  };
+
+  useEffect(() => {
+    initWebSocket();
+
+    // Handle app coming to foreground
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        setConnectionStatus("RECONNECTING");
+
+        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+          initWebSocket();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
-      ws.close();
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
@@ -91,7 +130,8 @@ export default function Home() {
     }
 
     wsRef.current.send(JSON.stringify({ type: "join", name }));
-    setConnected(true);
+    setIsJoined(true);
+    setConnectionStatus("CONNECTED");
   };
 
   return (
@@ -104,18 +144,21 @@ export default function Home() {
         <span>Status:</span>
         <b
           className={cn(
-            wsRef.current?.readyState === wsRef.current?.OPEN
-              ? "text-green-500"
-              : "text-red-500"
+            connectionStatus === "CONNECTED" && "text-green-500",
+            connectionStatus === "RECONNECTING" && "text-yellow-500",
+            connectionStatus === "DISCONNECTED" && "text-red-500",
           )}
         >
-          {wsRef.current?.readyState === wsRef.current?.OPEN
+          {connectionStatus === "CONNECTED"
             ? "Connected - " + playersCount + " players"
-            : "Disconnected"}
+            : null}
+
+          {connectionStatus === "DISCONNECTED" ? "Disconnected" : null}
+          {connectionStatus === "RECONNECTING" ? "Reconnecting" : null}
         </b>
       </div>
 
-      {!connected ? (
+      {!isJoined ? (
         <form
           className="flex flex-col bg-secondary mx-5 border p-5 rounded-xl gap-3 items-start"
           onSubmit={handleJoinForm}
@@ -137,7 +180,7 @@ export default function Home() {
         </form>
       ) : null}
 
-      {isAdmin && connected && (
+      {isAdmin && isJoined && connectionStatus === "CONNECTED" && (
         <Button
           onClick={handleStart}
           size="lg"
@@ -148,11 +191,11 @@ export default function Home() {
         </Button>
       )}
 
-      {connected ? (
+      {connectionStatus === "CONNECTED" ? (
         <div
           className={cn(
             "grid border md:divide-x p-4 mx-5 grid-cols-1  gap-5 rounded-lg",
-            isAdmin && "md:grid-cols-3"
+            isAdmin && "md:grid-cols-3",
           )}
         >
           <div className="flex flex-col col-span-2 bg-neutral-900 rounded-lg p-3">
